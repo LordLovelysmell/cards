@@ -1,0 +1,6 @@
+.popup.popup_is-opened {
+  display: flex;
+}
+.media-image {
+  display: block;
+}
