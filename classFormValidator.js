@@ -10,10 +10,9 @@
 class FormValidator {
   constructor(element) {
     this.element = element;
-    // setEventListeners();
+    this.setEventListeners();
 
   }
-  
   
   checkInputValidity(event) {
     const errorElement = event.target.nextElementSibling;
@@ -28,51 +27,41 @@ class FormValidator {
     const isValid = !inputs.map(elem => elem.checkValidity()).filter(input => !input).length;
 
     const resetError = () => {
-    errorElement.style.display = 'none';
-    errorElement.textContent = '';
+      errorElement.style.display = 'none';
+      errorElement.textContent = '';
     } 
 
     if (event.target.validity.valueMissing) {
       errorElement.textContent = 'Это обязательное поле'
       activateError();
-      return;
     }
 
     if (event.target.validity.tooShort) {
       errorElement.textContent = 'Должно быть от 2 до 30 символов';
       activateError();
-      return;
     }
 
     if (event.target.validity.typeMismatch) {
       errorElement.textContent = 'Здесь должна быть ссылка';
       activateError();
-      return;
     }
 
     if (event.target.validity.valid) {
       resetError();
-      return;
     }
-    this.setSubmitButtonState(isValid);
+
+    return isValid
   }
 
   setSubmitButtonState(isValid) {
     const popupWindow = event.target.closest('.popup__form');
     const button = popupWindow.querySelector('.popup__button');
     // А если вам передадут форму с тремя полями? Переписывать класс?
-    // debugger
-    
     if (isValid) {
-      console.log('true')
       button.removeAttribute('disabled');
       button.classList.remove('popup__button_disabled');
-      return
-    } 
-    if (!isValid) {
-      console.log('false')
+    } else {
       button.classList.add('popup__button_disabled');
-      return
     }
   }
 
@@ -80,7 +69,8 @@ class FormValidator {
     // REVIEW : Надо исправить
     // Некорректная логика -- обработка событий происходит асинхронно а не по порядку,
     // поэтому нет нельязя вызыват валидацию полей и кнопки через события
-    this.element.addEventListener('input', this.checkInputValidity);
-    this.element.addEventListener('input', this.setSubmitButtonState);
+    this.element.addEventListener('input', (event) => {
+      this.setSubmitButtonState(this.checkInputValidity(event));
+    });
   }
 }
